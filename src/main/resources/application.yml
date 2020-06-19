@@ -1,0 +1,27 @@
+spring:
+  profiles:
+    active: local
+  mvc:
+    locale: ko_KR
+  messages:
+    basename: classpath:/messages/message
+    encoding: UTF-8
+config:
+  restTemplate:
+    timeout: 10000
+    maxConnTotal: 200
+    maxConnPerRoute: 100
+---
+spring:
+  profiles: local
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017
+      database: parking
+server:
+  port: 8000
+---
+spring:
+  profiles: dev
+server:
+  port: 8001
