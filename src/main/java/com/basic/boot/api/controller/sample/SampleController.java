@@ -70,7 +70,7 @@ public class SampleController {
     @PutMapping(value = "/sample")
     public void modifySample(@RequestBody Sample sample) {
         if (sample.getSample() == null || sample.getSample().equals("")) {
-            throw new InvalidRequestException("sample invalidRequestException");
+            throw new InvalidRequestException("sample1 invalidRequestException");
         }
         sampleService.modifySample();
     }
