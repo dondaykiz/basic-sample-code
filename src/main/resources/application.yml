@@ -14,10 +14,6 @@ config:
 ---
 spring:
   profiles: local
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017
-      database: parking
 server:
   port: 8000
 ---
