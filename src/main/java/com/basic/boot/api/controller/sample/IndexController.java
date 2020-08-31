@@ -30,19 +30,6 @@ public class IndexController {
     @GetMapping(value = "/")
     public ApiResponse index() {
         logger.debug("INDEX_CONTROLLER");
-        String[] participant = {"leo", "kiki", "eden"};
-        String[] completion = {"eden", "kiki"};
-        String answer = "";
-        Map<String, Integer> map = new HashMap<>();
-        for (String person : participant) map.put(person, map.getOrDefault(person, 0) + 1);
-        for (String person : completion) map.put(person, map.get(person) - 1);
-        logger.debug("MAP >>> " + map);
-        for(String key : map.keySet()) {
-            if(map.get(key) != 0) {
-                logger.debug("RESULT >>> " + key);
-            }
-        }
-
         ApiResponse apiResponse = new ApiResponse();
         return apiResponse;
     }

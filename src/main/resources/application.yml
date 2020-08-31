@@ -9,8 +9,8 @@ spring:
 config:
   restTemplate:
     timeout: 10000
-    maxConnTotal: 200
-    maxConnPerRoute: 100
+    maxConnTotal: 2
+    maxConnPerRoute: 2
 ---
 spring:
   profiles: local
