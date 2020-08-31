@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * IndexController.
@@ -33,4 +34,5 @@ public class IndexController {
         ApiResponse apiResponse = new ApiResponse();
         return apiResponse;
     }
+
 }
