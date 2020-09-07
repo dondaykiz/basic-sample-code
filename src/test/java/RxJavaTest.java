@@ -1,8 +1,18 @@
+import com.microsoft.azure.storage.CloudStorageAccount;
+import com.microsoft.azure.storage.OperationContext;
+import com.microsoft.azure.storage.blob.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,5 +75,34 @@ public class RxJavaTest {
             e.printStackTrace();
         }
         return data;
+    }
+
+    @Test
+    public void uploadBlob() {
+        logger.debug("BLOB_UPLOAD_STARTED");
+        String connString = "DefaultEndpointsProtocol=https;AccountName=yjstorage01;AccountKey=497SIStSqXHdRD0dGM/iIqSwPz3P2WGbRjCdzBFis+t2G3NNbO04xVS+2oXV00Mpp5zCMRUxcKXOxCplvlaz6Q==;EndpointSuffix=core.windows.net";
+        CloudStorageAccount storageAccount;
+        CloudBlobClient blobClient = null;
+        CloudBlobContainer container=null;
+        File sourceFile = null;
+
+        try {
+            storageAccount = CloudStorageAccount.parse(connString);
+            blobClient = storageAccount.createCloudBlobClient();
+            container = blobClient.getContainerReference("yjblobtest");
+            container.createIfNotExists(BlobContainerPublicAccessType.CONTAINER, new BlobRequestOptions(), new OperationContext());
+
+            sourceFile = File.createTempFile("sampleFile", ".txt");
+            Writer output = new BufferedWriter(new FileWriter(sourceFile));
+            output.write("Hello Azure!");
+            output.close();
+
+            CloudBlockBlob blob = container.getBlockBlobReference(sourceFile.getName());
+            blob.uploadFromFile(sourceFile.getAbsolutePath());
+
+            logger.debug("BLOB_UPLOAD_FINISHED");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

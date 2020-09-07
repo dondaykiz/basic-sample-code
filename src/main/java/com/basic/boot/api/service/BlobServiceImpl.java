@@ -1,38 +1,53 @@
 package com.basic.boot.api.service;
 
-import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.BlobServiceClient;
-import com.azure.storage.blob.BlobServiceClientBuilder;
-import com.azure.storage.blob.specialized.BlockBlobClient;
-import com.azure.storage.common.StorageSharedKeyCredential;
+import com.basic.boot.api.controller.sample.RxJavaTest2;
+import com.microsoft.azure.storage.CloudStorageAccount;
+import com.microsoft.azure.storage.OperationContext;
+import com.microsoft.azure.storage.blob.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
 
 @Service
 public class BlobServiceImpl implements BlobService {
-    @Override
-    public void uploadBlob() {
-        String accountName = "";
-        String accountKey = "";
-        StorageSharedKeyCredential credential = new StorageSharedKeyCredential(accountName, accountKey);
-        String endpoint = "";
+    /**
+     * Logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(BlobServiceImpl.class);
 
-        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().endpoint(endpoint).credential(credential).buildClient();
-        BlobContainerClient blobContainerClient = blobServiceClient.getBlobContainerClient("myjavacontainerbasic" + System.currentTimeMillis());
-        blobContainerClient.create();
-        BlockBlobClient blobClient = blobContainerClient.getBlobClient("HelloWorld.txt").getBlockBlobClient();
+    @Override
+    public String uploadBlob(String data) {
+        String connString = "DefaultEndpointsProtocol=https;AccountName=yjstorage01;AccountKey=497SIStSqXHdRD0dGM/iIqSwPz3P2WGbRjCdzBFis+t2G3NNbO04xVS+2oXV00Mpp5zCMRUxcKXOxCplvlaz6Q==;EndpointSuffix=core.windows.net";
+        CloudStorageAccount storageAccount;
+        CloudBlobClient blobClient = null;
+        CloudBlobContainer container=null;
+        File sourceFile = null;
 
         try {
-            String data = "Hello world!";
-            InputStream dataStream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
-            blobClient.upload(dataStream, data.length());
-            dataStream.close();
-        } catch (IOException e) {
+            storageAccount = CloudStorageAccount.parse(connString);
+            blobClient = storageAccount.createCloudBlobClient();
+            container = blobClient.getContainerReference("yjblobtest");
+            logger.debug("CREATING_BLOB: " + data + ".txt");
+            container.createIfNotExists(BlobContainerPublicAccessType.CONTAINER, new BlobRequestOptions(), new OperationContext());
+
+            sourceFile = File.createTempFile(data, ".txt");
+            logger.debug("CREATING_FILE: " + sourceFile.getName());
+            Writer output = new BufferedWriter(new FileWriter(sourceFile));
+            output.write("Hello Azure!");
+            output.close();
+
+            CloudBlockBlob blob = container.getBlockBlobReference(sourceFile.getName());
+            logger.debug("UPLOADING_FILE: " + sourceFile.getAbsolutePath());
+            blob.uploadFromFile(sourceFile.getAbsolutePath());
+            logger.debug("UPLOAD_FINISHED");
+        } catch (Exception e) {
             e.printStackTrace();
         }
+        return "OK";
     }
 }
