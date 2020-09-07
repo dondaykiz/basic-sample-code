@@ -101,7 +101,7 @@ public class RxJavaTest2 {
                                 .subscribeOn(Schedulers.io())
                                 .onErrorReturn(e -> {
                                         e.printStackTrace();
-                                        return "EXCEPTION_TEST";
+                                        return "EXCEPTION";
                                 })
                 )
                 .subscribe(result -> logger.debug("RESULT >> " + result));
