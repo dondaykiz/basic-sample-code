@@ -28,22 +28,28 @@ public class RxJavaTest2 {
         //rxJavaIterator();
         //rxJavaMap();
         //rxJavaFlatMap();
-        uploadBlob();
+        //uploadBlob();
     }
 
+    @GetMapping(value = "just")
     public void rxJavaJust() {
         logger.debug("RXJAVA_JUST_STARTED");
         Observable.just("apple", "banana", "grape", "orange", "tomato")
+                .doOnNext(nextData -> logger.debug("DATA : {}, Thread: {}", nextData, Thread.currentThread().getName()))
                 .subscribe(logger::debug);
+        logger.debug("RXJAVA_JUST_FINISHED");
     }
 
+    @GetMapping(value = "array")
     public void rxJavaArray() {
         logger.debug("RXJAVA_ARRAY_STARTED");
         String[] array = {"apple", "banana", "grape", "orange", "tomato"};
         Observable.fromArray(array)
                 .subscribe(logger::debug);
+        logger.debug("RXJAVA_ARRAY_FINISHED");
     }
 
+    @GetMapping(value = "list")
     public void rxJavaIterator() {
         logger.debug("RXJAVA_ITERABLE_STARTED");
         List<String> list = new ArrayList<>();
@@ -55,8 +61,10 @@ public class RxJavaTest2 {
 
         Observable.fromIterable(list)
                 .subscribe(logger::debug);
+        logger.debug("RXJAVA_ITERABLE_FINISHED");
     }
 
+    @GetMapping(value = "flatMap")
     public void rxJavaFlatMap() {
         logger.debug("RXJAVA_FLATMAP_STARTED");
         String[] array = {"apple", "banana", "grape", "orange", "tomato"};
@@ -66,11 +74,24 @@ public class RxJavaTest2 {
                                 .doOnNext(nextData -> logger.debug("DATA : {}, Thread: {}", nextData, Thread.currentThread().getName()))
                                 .subscribeOn(Schedulers.io())
                 )
-                .subscribe();
+                .subscribe(logger::debug);
 
         logger.debug("RXJAVA_FLATMAP_FINISHED");
     }
 
+    @GetMapping(value = "map")
+    public void rxJavaMap() {
+        logger.debug("RXJAVA_MAP_STARTED");
+        String[] array = {"apple", "banana", "grape", "orange", "tomato"};
+        Observable.fromArray(array)
+                .map(data -> formatString(data))
+                .doOnNext(nextData -> logger.debug("DATA : {}, Thread: {}", nextData, Thread.currentThread().getName()))
+                .subscribeOn(Schedulers.io())
+                .subscribe(logger::debug);
+        logger.debug("RXJAVA_MAP_FINISHED");
+    }
+
+    @GetMapping(value = "upload")
     public void uploadBlob() {
         logger.debug("BLOB_UPLOAD_STARTED");
         String[] array = {"apple", "banana", "grape", "orange", "tomato"};
@@ -78,9 +99,12 @@ public class RxJavaTest2 {
                 .flatMap(data ->
                         Observable.fromCallable(() -> blobService.uploadBlob(data))
                                 .subscribeOn(Schedulers.io())
+                                .onErrorReturn(e -> {
+                                        e.printStackTrace();
+                                        return "EXCEPTION_TEST";
+                                })
                 )
-                .subscribe();
-
+                .subscribe(result -> logger.debug("RESULT >> " + result));
         logger.debug("BLOB_UPLOAD_FINISHED");
     }
 

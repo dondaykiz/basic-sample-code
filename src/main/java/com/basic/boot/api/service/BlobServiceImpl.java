@@ -1,6 +1,7 @@
 package com.basic.boot.api.service;
 
 import com.basic.boot.api.controller.sample.RxJavaTest2;
+import com.basic.boot.api.exception.CommonException;
 import com.microsoft.azure.storage.CloudStorageAccount;
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.blob.*;
@@ -22,7 +23,7 @@ public class BlobServiceImpl implements BlobService {
 
     @Override
     public String uploadBlob(String data) {
-        String connString = "DefaultEndpointsProtocol=https;AccountName=yjstorage01;AccountKey=497SIStSqXHdRD0dGM/iIqSwPz3P2WGbRjCdzBFis+t2G3NNbO04xVS+2oXV00Mpp5zCMRUxcKXOxCplvlaz6Q==;EndpointSuffix=core.windows.net";
+        String connString = "1DefaultEndpointsProtocol=https;AccountName=yjstorage01;AccountKey=497SIStSqXHdRD0dGM/iIqSwPz3P2WGbRjCdzBFis+t2G3NNbO04xVS+2oXV00Mpp5zCMRUxcKXOxCplvlaz6Q==;EndpointSuffix=core.windows.net";
         CloudStorageAccount storageAccount;
         CloudBlobClient blobClient = null;
         CloudBlobContainer container=null;
@@ -45,9 +46,9 @@ public class BlobServiceImpl implements BlobService {
             logger.debug("UPLOADING_FILE: " + sourceFile.getAbsolutePath());
             blob.uploadFromFile(sourceFile.getAbsolutePath());
             logger.debug("UPLOAD_FINISHED");
+            return "OK";
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new CommonException();
         }
-        return "OK";
     }
 }
