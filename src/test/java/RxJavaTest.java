@@ -50,7 +50,7 @@ public class RxJavaTest {
                 .flatMap(data ->
                         Observable.fromCallable(() -> formatString(data))
                                 .doOnNext(nextData -> logger.debug("DATA : {}, Thread: {}", nextData, Thread.currentThread().getName()))
-                                .subscribeOn(Schedulers.trampoline())
+                                .subscribeOn(Schedulers.computation())
                 )
                 .subscribe();
 
