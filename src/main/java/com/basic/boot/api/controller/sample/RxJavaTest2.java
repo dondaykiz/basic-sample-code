@@ -21,16 +21,6 @@ public class RxJavaTest2 {
     @Autowired
     BlobService blobService;
 
-    @GetMapping(value = "rxjava")
-    public void rxJava() {
-        //rxJavaJust();
-        //rxJavaArray();
-        //rxJavaIterator();
-        //rxJavaMap();
-        //rxJavaFlatMap();
-        //uploadBlob();
-    }
-
     @GetMapping(value = "just")
     public void rxJavaJust() {
         logger.debug("RXJAVA_JUST_STARTED");
@@ -98,12 +88,12 @@ public class RxJavaTest2 {
         Observable.fromArray(array)
                 .flatMap(data ->
                         Observable.fromCallable(() -> blobService.uploadBlob(data))
-                                .subscribeOn(Schedulers.io())
                                 .onErrorReturn(e -> {
                                         e.printStackTrace();
                                         return "EXCEPTION";
                                 })
                 )
+                .subscribeOn(Schedulers.io())
                 .subscribe(result -> logger.debug("RESULT >> " + result));
         logger.debug("BLOB_UPLOAD_FINISHED");
     }
@@ -111,7 +101,7 @@ public class RxJavaTest2 {
     public String formatString(String data) {
         try {
             Random random = new Random();
-            int sleep = random.nextInt(4000);
+            int sleep = random.nextInt(3000);
             Thread.sleep(sleep);
             return data + " + @";
         } catch (Exception e) {
