@@ -1,11 +1,25 @@
 package com.basic.boot.api.controller.sample;
 
+import com.basic.boot.api.exception.InvalidRequestException;
 import com.basic.boot.api.model.ApiResponse;
+import com.basic.boot.api.model.Test;
+import com.basic.boot.api.util.CommonRestUtil;
+import com.basic.boot.api.util.RestTemplateUtil;
+import io.socket.client.IO;
+import io.socket.client.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
@@ -19,6 +33,11 @@ public class IndexController {
      * Logger.
      */
     private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+    /**
+     * CommonRestUtil.
+     */
+    @Autowired
+    RestTemplateUtil restTemplate;
 
     /**
      * index.
@@ -30,5 +49,30 @@ public class IndexController {
         logger.debug("INDEX_CONTROLLER");
         ApiResponse apiResponse = new ApiResponse();
         return apiResponse;
+    }
+
+    @PostMapping(value = "/test")
+    public void test(@Validated @RequestBody Test test, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) {
+            throw new InvalidRequestException(bindingResult);
+        }
+    }
+
+    @GetMapping(value = "/test")
+    public void test() throws Exception {
+        Socket socket;
+        logger.debug("SOCKET_CLIENT_STARTED");
+        //socket = IO.socket("http://112.219.69.210:16819/api/event/receive?event=true");
+        socket = IO.socket("http://localhost:8002/socket");
+        socket.open();
+        logger.debug("SOCKET: connected={}, id={} ", socket.connected(), socket.id());
+    }
+
+    @GetMapping(value = "/rest")
+    public void testRestTemplate() throws Exception {
+        logger.debug("REST_REQUEST_STARTED : " + Thread.currentThread().getName());
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap = restTemplate.restTemplate("http://localhost:8000/", HttpMethod.GET, null, null,  Thread.currentThread().getName());
+
     }
 }

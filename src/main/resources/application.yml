@@ -9,13 +9,13 @@ spring:
 config:
   restTemplate:
     timeout: 10000
-    maxConnTotal: 2
-    maxConnPerRoute: 2
+    maxConnTotal: 100
+    maxConnPerRoute: 50
 ---
 spring:
   profiles: local
 server:
-  port: 8000
+  port: 8001
 ---
 spring:
   profiles: dev
